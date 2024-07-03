@@ -33,9 +33,17 @@ _Hint_ - Use [nodemon](https://www.npmjs.com/package/nodemon) instead of `node` 
 
 ### Notes:
 
-#### Keys & Addresses:
-The new default wallet addresses used are the last 20 bytes of keccak hash of the public key generated from random private keys. 
-For more wallet addresses please use the script `server/scripts/generate.js`. The output of the script is as follow:
+#### Wallet Address Generator:
+This project includes a script to generate Ethereum wallet addresses using the keccak hash of the public key generated from random private keys. The script is named `generate.js` and is located in the `server/scripts` folder.
+
+The script generates wallet addresses by following these steps:
+
+1. Generate a random private key.
+1. Derive the public key from the private key.
+1. Compute the keccak hash of the public key.
+1. Use the last 20 bytes of the keccak hash as the wallet address.
+
+The script doesn't require any parameters. Simply run the script using Node.js to generate a new wallet address. The output of the script is as follow:
 
 ```shell
 $ node ./server/scripts/generate.js 
@@ -43,7 +51,8 @@ Private Key:  .......
 Public Key:  ........
 Wallet Address:  ..........
 ```
-For testing purposes, please consider the following keys and wallet addresses:
+
+Below is the list of the wallet address being used in the app with their respective private and public keys.
 
 * Wallet Address #1:
     - Private Key:  9f860bf532265a3f63e5d083fd49e572d7bdb0633527488803c21315975c3e73
@@ -60,12 +69,37 @@ For testing purposes, please consider the following keys and wallet addresses:
     - Public Key:  044e9917739cdf916f062f27f9c62906bc3fc3c2802114dfe206a2f3646968e071592b28830923f6340c15766b3aaf08e08ede8d8f4e2121f88904db86c676e4cd
     - Wallet Address:  24c1ad1a769c59bd33274c1ca9a537282b44a15a
 
-#### Signature:
-The app is enhanced to consider the transaction signature wich is generated using `secp256k1` algorithm.
-The script `server/scripts/sign.js` generates the transaction signature, it takes the following parameters `--amount` `--recipient` `--publicKey` `--privateKey`, all the parameters are required. The output of the script is as follow:
+#### Transfer Signing Script:
+This project includes a script to sign a transfer using the `secp256k1` algorithm. The script is named sign.js and is located in the `server/scripts` folder. The signature is created using the provided amount, recipient address, public key, and private key. It requires four mandatory parameters: `--amount`, `--recipient`, `--publicKey`, and `--privateKey`. Run the script using Node.js to generate the transaction signature. The output of the script is as follow:
 
 ```shell
 $ node ./scripts/sign.js --amount "...." --recipient "...." --publicKey "...." --privateKey "...."
 signature:  .....
 ```
 
+#### How To Use The App:
+This guide will walk you through the steps to perform a transfer using the app. Ensure you have the necessary information and scripts ready before proceeding.
+
+#### Steps to Perform a Transfer:
+1. Enter the wallet address to transfer from:
+Fill in the Wallet Address field with the address you are transferring from.
+1. Enter the amount to transfer:
+Fill in the Send Amount field with the amount you wish to transfer.
+1. Enter the recipient's wallet address:
+Fill in the Recipient Wallet Address field with the address of the recipient.
+1. Enter the sender's public key:
+Fill in the Sender Public Key field with your public key. This key should be the one used to compute the keccak hash for your wallet address.
+1. Enter the transaction signature:
+Use the sign.js script to generate the signature. The signature should be the output of the sign.js script, generated using the `--amount`, `--recipient`, `--publicKey`, and `--privateKey` parameters.
+Fill in the Transaction Signature field with the generated signature.
+
+#### Server-side Validations:
+
+1. Wallet Address Validation:
+The server will validate that the wallet address is actually generated from the provided public key.
+If the wallet address is not valid, a response with code 400 will be returned with the message: `Sender wallet address does not match with the provided public key.`
+1. Signature Validation:
+The server will validate that the signature is signed using the provided public key and the transaction hash.
+If the signature is not valid, a response with code 400 will be returned with the message: `Unable to validate transaction signature.`
+
+By following these steps and ensuring all fields are correctly filled, you can successfully perform a transfer using the app.
